@@ -16,7 +16,7 @@ st.set_page_config(
 # --- Load Data ---
 @st.cache_data   # This caches the data so it doesn't reload every time
 def load_data():
-    df = pd.read_csv("data/transactions.csv")
+    df = pd.read_excel("afficionado_coffee_df_cleaned.xls")
     df["revenue"] = df["transaction_qty"] * df["unit_price"]
     df["hour"] = pd.to_datetime(df["transaction_time"], format="%H:%M:%S").dt.hour
     return df
