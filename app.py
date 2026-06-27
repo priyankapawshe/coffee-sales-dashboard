@@ -167,20 +167,35 @@ if 'store_location' in df.columns or 'product_category' in df.columns:
                     text="revenue"
                 )
 
-                fig1.update_traces(
-                    texttemplate='$%{text:,.0f}',
-                    textposition='auto'
-                )
+fig1.update_traces(
+texttemplate='$%{text:,.0f}',
+textposition='outside',
+textfont=dict(
+color="black",
+size=13
+),
+cliponaxis=False
+)
 
-                fig1.update_layout(
-                    showlegend=False,
-                    margin=dict(t=10, b=50),
-                    coloraxis_showscale=False,
-                    plot_bgcolor="white",
-                    paper_bgcolor="white"
-                )
-
-                st.plotly_chart(fig1, use_container_width=True)
+fig1.update_layout(
+    showlegend=False,
+    margin=dict(t=10, b=50),
+    coloraxis_showscale=False,
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    font=dict(
+        color="black",
+        size=13
+    ),
+    xaxis=dict(
+        title_font=dict(color="black"),
+        tickfont=dict(color="black")
+    ),
+    yaxis=dict(
+        title_font=dict(color="black"),
+        tickfont=dict(color="black")
+    )
+)
 
     # Revenue by Category
     if 'product_category' in df.columns and 'revenue' in df.columns:
@@ -212,19 +227,28 @@ if 'store_location' in df.columns or 'product_category' in df.columns:
                     ]
                 )
 
-                fig2.update_traces(
-                    textinfo="percent+label",
-                    textfont_size=13
-                )
+fig2.update_traces(
+    textinfo="percent+label",
+    textfont=dict(
+        color="black",
+        size=13
+    ),
+    marker=dict(
+        line=dict(color="white", width=2)
+    )
+)
 
-                fig2.update_layout(
-                    margin=dict(t=10),
-                    paper_bgcolor="white"
-                )
-
-                st.plotly_chart(fig2, use_container_width=True)
-
-    st.divider()
+fig2.update_layout(
+    margin=dict(t=10),
+    paper_bgcolor="white",
+    font=dict(
+        color="black",
+        size=13
+    ),
+    legend=dict(
+        font=dict(color="black")
+    )
+)
 
 # --- SECTION 2: HOURLY TREND & TOP PRODUCTS ---
 if 'hour' in df.columns or 'product_detail' in df.columns:
