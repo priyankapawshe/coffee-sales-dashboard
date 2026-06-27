@@ -14,11 +14,14 @@ st.set_page_config(
 )
 
 # --- Load Data ---
-@st.cache_data   # This caches the data so it doesn't reload every time
+@st.cache_data
 def load_data():
-    df = pd.read_csv(r"C:\Users\SANDEEP\Downloads\afficionado_coffee_cleaned_df.csv")
+    df = pd.read_csv("afficionado_coffee_cleaned_df.csv")
+
+    # Create new columns
     df["revenue"] = df["transaction_qty"] * df["unit_price"]
     df["hour"] = pd.to_datetime(df["transaction_time"], format="%H:%M:%S").dt.hour
+
     return df
 
 df = load_data()
