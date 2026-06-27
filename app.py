@@ -15,12 +15,12 @@ st.set_page_config(
 
 # --- Load Data ---
 @st.cache_data
+@st.cache_data
 def load_data():
-    df = pd.read_csv(")
+    df = pd.read_excel("afficionado_coffee_cleaned_df.xls")
 
-    # Create new columns
     df["revenue"] = df["transaction_qty"] * df["unit_price"]
-    df["hour"] = pd.to_datetime(df["transaction_time"], format="%H:%M:%S").dt.hour
+    df["hour"] = pd.to_datetime(df["transaction_time"]).dt.hour
 
     return df
 
