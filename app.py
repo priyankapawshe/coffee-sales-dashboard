@@ -16,7 +16,7 @@ st.set_page_config(
 # --- Load Data ---
 @st.cache_data
 def load_data():
-    df = pd.read_csv("afficionado_coffee_cleaned_df.csv")
+    df = pd.read_csv(")
 
     # Create new columns
     df["revenue"] = df["transaction_qty"] * df["unit_price"]
