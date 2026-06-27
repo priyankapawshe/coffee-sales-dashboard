@@ -123,132 +123,46 @@ st.sidebar.info(f"📊 Showing {len(filtered_df):,} transactions")
 st.divider()
 
 # --- SECTION 1: STORE & CATEGORY BREAKDOWN ---
-# --- SECTION 1: STORE & CATEGORY BREAKDOWN ---
-
 if 'store_location' in df.columns or 'product_category' in df.columns:
-
     st.subheader("📊 Revenue Analysis")
-
+    
     col_left, col_right = st.columns(2)
-
-    # Revenue by Store
+    
     if 'store_location' in df.columns and 'revenue' in df.columns:
-
         with col_left:
-
-            st.markdown("#### ☕ Revenue by Store")
-
-            store_rev = (
-                filtered_df.groupby("store_location")["revenue"]
-                .sum()
-                .sort_values(ascending=False)
-                .reset_index()
-            )
-
+            st.markdown("#### Revenue by Store")
+            store_rev = filtered_df.groupby("store_location")["revenue"].sum().sort_values(ascending=False).reset_index()
+            
             if len(store_rev) > 0:
-
                 fig1 = px.bar(
                     store_rev,
                     x="store_location",
                     y="revenue",
                     color="revenue",
-                    color_continuous_scale=[
-                        "#F5E6D3",   # Light Cream
-                        "#D2B48C",   # Tan
-                        "#A67C52",   # Coffee
-                        "#8B5E3C",   # Medium Brown
-                        "#6F4E37",   # Coffee Brown
-                        "#4B2E2B"    # Dark Espresso
-                    ],
-                    labels={
-                        "store_location": "Store",
-                        "revenue": "Revenue ($)"
-                    },
+                    color_continuous_scale="Blues",
+                    labels={"store_location": "Store", "revenue": "Revenue ($)"},
                     text="revenue"
                 )
-
-fig1.update_traces(
-texttemplate='$%{text:,.0f}',
-textposition='outside',
-textfont=dict(
-color="black",
-size=13
-),
-cliponaxis=False
-)
-
-fig1.update_layout(
-    showlegend=False,
-    margin=dict(t=10, b=50),
-    coloraxis_showscale=False,
-    plot_bgcolor="white",
-    paper_bgcolor="white",
-    font=dict(
-        color="black",
-        size=13
-    ),
-    xaxis=dict(
-        title_font=dict(color="black"),
-        tickfont=dict(color="black")
-    ),
-    yaxis=dict(
-        title_font=dict(color="black"),
-        tickfont=dict(color="black")
-    )
-)
-
-    # Revenue by Category
+                fig1.update_traces(texttemplate='$%{text:,.0f}', textposition='auto')
+                fig1.update_layout(showlegend=False, margin=dict(t=10, b=50))
+                st.plotly_chart(fig1, use_container_width=True)
+    
     if 'product_category' in df.columns and 'revenue' in df.columns:
-
         with col_right:
-
-            st.markdown("#### ☕ Revenue by Category")
-
-            cat_rev = (
-                filtered_df.groupby("product_category")["revenue"]
-                .sum()
-                .reset_index()
-            )
-
+            st.markdown("#### Revenue by Category")
+            cat_rev = filtered_df.groupby("product_category")["revenue"].sum().reset_index()
+            
             if len(cat_rev) > 0:
-
                 fig2 = px.pie(
                     cat_rev,
                     names="product_category",
                     values="revenue",
-                    color_discrete_sequence=[
-                        "#6F4E37",   # Coffee Brown
-                        "#8B5E3C",
-                        "#A67C52",
-                        "#C19A6B",
-                        "#D2B48C",
-                        "#E6CCB2",
-                        "#F5E6D3"
-                    ]
+                    color_discrete_sequence=px.colors.qualitative.Pastel
                 )
-
-fig2.update_traces(
-    textinfo="percent+label",
-    textfont=dict(
-        color="black",
-        size=13
-    ),
-    marker=dict(
-        line=dict(color="white", width=2)
-    )
-)
-
-fig2.update_layout(
-    margin=dict(t=10),
-    paper_bgcolor="white",
-    font=dict(
-        color="black",
-        size=13
-    ),
-    legend=dict(
-        font=dict(color="black")
-    )
-)
+                fig2.update_layout(margin=dict(t=10))
+                st.plotly_chart(fig2, use_container_width=True)
+    
+    st.divider()
 
 # --- SECTION 2: HOURLY TREND & TOP PRODUCTS ---
 if 'hour' in df.columns or 'product_detail' in df.columns:
