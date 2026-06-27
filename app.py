@@ -26,8 +26,7 @@ def load_data():
     """
     
     # YOUR GITHUB RAW FILE URL
-    github_raw_url = "https://raw.githubusercontent.com/priyanykapawshe/coffee-sales-dashboard/main/afficionado_coffee_cleaned_df_final.xls"
-    
+    github_raw_url = https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/refs/heads/main/afficionado_coffee_cleaned_df_final.xls
     df = None
     
     try:
