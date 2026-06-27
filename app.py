@@ -1,6 +1,6 @@
 # ============================================================================
 # AFFICIONADO COFFEE ROASTERS - STREAMLIT DASHBOARD
-# Customized for priyanykapawshe/coffee-sales-dashboard
+# FULLY FIXED - With proper Excel engine handling
 # ============================================================================
 
 import streamlit as st
@@ -8,6 +8,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import io
+import sys
 
 # --- Page config (must be FIRST streamlit command) ---
 st.set_page_config(
@@ -20,54 +21,137 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     """
-    Load data from GitHub repository
+    Load data from GitHub repository with multiple format support
     File: afficionado_coffee_cleaned_df_final.xls
-    Repository: priyanykapawshe/coffee-sales-dashboard
+    Repository: priyankapawshe/coffee-sales-dashboard
     """
     
-    # YOUR GITHUB RAW FILE URL
-    github_raw_url = "https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/refs/heads/main/afficionado_coffee_cleaned_df_final.xls"
-    df = None
+    # YOUR GITHUB RAW FILE URLS - Try multiple versions
+    github_urls = [
+        # Primary: Direct .xls file
+        "https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/refs/heads/main/afficionado_coffee_cleaned_df_final.xls",
+        # Alternative: Main branch syntax
+        "https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/main/afficionado_coffee_cleaned_df_final.xls",
+        # Alternative: If converted to xlsx
+        "https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/refs/heads/main/afficionado_coffee_cleaned_df_final.xlsx",
+        "https://raw.githubusercontent.com/priyankapawshe/coffee-sales-dashboard/main/afficionado_coffee_cleaned_df_final.xlsx",
+    ]
     
-    try:
-        # Try loading from GitHub
-        st.info("🔄 Loading data from GitHub...")
-        df = pd.read_excel(github_raw_url)
-        st.success("✅ Data loaded successfully from GitHub!")
-        
-    except Exception as e:
-        st.warning(f"⚠️ Could not load from GitHub: {e}")
-        st.info("Trying alternative loading method...")
+    df = None
+    loaded_url = None
+    
+    # Try each URL
+    for github_url in github_urls:
+        try:
+            st.info(f"🔄 Trying to load from: {github_url.split('/')[-1]}")
+            
+            # Determine file type from URL
+            if github_url.endswith('.xls'):
+                # For .xls files - MUST specify engine='xlrd'
+                df = pd.read_excel(github_url, engine='xlrd')
+                loaded_url = github_url
+                st.success(f"✅ Data loaded successfully from GitHub (.xls file)!")
+                break
+                
+            elif github_url.endswith('.xlsx'):
+                # For .xlsx files - specify engine='openpyxl'
+                df = pd.read_excel(github_url, engine='openpyxl')
+                loaded_url = github_url
+                st.success(f"✅ Data loaded successfully from GitHub (.xlsx file)!")
+                break
+                
+        except Exception as e:
+            st.warning(f"⚠️ Could not load from {github_url.split('/')[-1]}: {str(e)[:100]}")
+            continue
+    
+    # If GitHub URLs didn't work, try alternative method with requests
+    if df is None:
+        st.info("🔄 Trying alternative loading method with requests library...")
         
         try:
-            # Alternative: Try reading as bytes first, then Excel
             import requests
-            response = requests.get(github_raw_url)
-            df = pd.read_excel(io.BytesIO(response.content))
-            st.success("✅ Data loaded successfully (via requests)!")
             
-        except Exception as e2:
-            st.error(f"❌ Error loading data: {e2}")
-            st.error("""
-            **Troubleshooting:**
-            1. Make sure your GitHub repo is PUBLIC
-            2. File name matches exactly: `afficionado_coffee_cleaned_df_final.xls`
-            3. File is in the root folder of your repo
-            4. You're on the `main` branch
-            
-            **If still not working, use local file:**
-            - Place file in same folder as app.py
-            - Run: streamlit run app.py
-            """)
-            return None
+            for github_url in github_urls:
+                try:
+                    response = requests.get(github_url)
+                    response.raise_for_status()
+                    
+                    if github_url.endswith('.xls'):
+                        df = pd.read_excel(io.BytesIO(response.content), engine='xlrd')
+                    elif github_url.endswith('.xlsx'):
+                        df = pd.read_excel(io.BytesIO(response.content), engine='openpyxl')
+                    
+                    loaded_url = github_url
+                    st.success(f"✅ Data loaded successfully (via requests + {github_url.split('.')[-1]})!")
+                    break
+                    
+                except Exception as e:
+                    continue
+                    
+        except Exception as e:
+            st.warning(f"⚠️ Alternative method failed: {str(e)[:100]}")
+    
+    # If still no data, show troubleshooting
+    if df is None:
+        st.error("""
+        ❌ Could not load data from GitHub
+        
+        **Troubleshooting Steps:**
+        
+        1. **Check your GitHub repo is PUBLIC**
+           - Go to Settings → Change visibility to Public
+        
+        2. **Verify file name is EXACT**
+           - Should be: `afficionado_coffee_cleaned_df_final.xls`
+           - No typos or extra spaces
+        
+        3. **Verify file location**
+           - Should be in root folder of repo (not in subfolder)
+        
+        4. **Try these alternatives:**
+        
+        **Option A: Convert to CSV (Recommended - Easiest)**
+        - Download your .xls file
+        - Open in Excel
+        - Save As → CSV format
+        - Upload to GitHub as `coffee_data.csv`
+        - Restart this app
+        
+        **Option B: Use Local File**
+        - Download your .xls file
+        - Place in same folder as app.py
+        - Run: `streamlit run app.py`
+        - App will use local file instead
+        
+        **Option C: Convert to XLSX**
+        - Download your .xls file
+        - Open in Excel
+        - Save As → Excel 2007+ format (.xlsx)
+        - Upload to GitHub
+        - Restart this app
+        
+        **For CSV files:**
+        - Works best with GitHub
+        - Simplest to load
+        - Recommended format
+        """)
+        return None
     
     if df is not None:
+        st.success(f"📊 Loaded {len(df)} records from GitHub!")
+        
         # Ensure required columns exist
         if 'revenue' not in df.columns and 'transaction_qty' in df.columns and 'unit_price' in df.columns:
             df['revenue'] = df['transaction_qty'] * df['unit_price']
         
         if 'hour' not in df.columns and 'transaction_time' in df.columns:
-            df['hour'] = pd.to_datetime(df['transaction_time'], format='%H:%M:%S', errors='coerce').dt.hour
+            try:
+                df['hour'] = pd.to_datetime(df['transaction_time'], format='%H:%M:%S', errors='coerce').dt.hour
+            except:
+                try:
+                    df['hour'] = pd.to_datetime(df['transaction_time'], errors='coerce').dt.hour
+                except:
+                    df['hour'] = 0
         
         if 'day_of_week' not in df.columns:
             df['day_of_week'] = 'Unknown'
