@@ -38,7 +38,7 @@ st.title("☕ Afficionado Coffee Roasters")
 st.markdown("### Sales Performance Dashboard")
 
 # Show data info
-col_info1, col_info2, col_info3 = st.columns(3)
+col_info1, col_info2, col_info3,col1, col2, col3, col4 = st.columns(7)
 with col_info1:
     st.metric("📊 Total Records", f"{df.shape[0]:,}")
 with col_info2:
@@ -46,10 +46,10 @@ with col_info2:
 with col_info3:
     st.metric("✅ Status", "Data Loaded")
 
-st.divider()
+
 
 # --- KPI CARDS (top row) ---
-col1, col2, col3, col4 = st.columns(4)
+
 
 with col1:
     st.metric(
