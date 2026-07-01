@@ -1,9 +1,9 @@
 # Afficionado Coffee Roasters — Sales Analysis
 Afficionado Coffee Roasters — Sales Trend & Time-Based Performance Analysis
 
-![image alt]() 
+![image alt](https://github.com/priyankapawshe/coffee-sales-dashboard/blob/b021a93ceca861eff94738b467cca383531d5ad4/Screenshot%202026-07-01%20193708.png) 
 
-![image alt]() 
+![image alt](https://github.com/priyankapawshe/coffee-sales-dashboard/blob/b021a93ceca861eff94738b467cca383531d5ad4/Screenshot%202026-07-01%20193749.png) 
 
 
 A transaction-level exploratory data analysis (EDA) of 149,116 point-of-sale records from three Afficionado Coffee Roasters store locations in New York City — Hell's Kitchen, Astoria, and Lower Manhattan — for the year 2025. The project moves store operations from intuition-based scheduling toward evidence-based decision-making by quantifying when demand occurs, what drives revenue, and how performance varies across locations and product lines.
